@@ -9,10 +9,17 @@ interface SubmitFormProps {
   categories: Category[];
 }
 
+const maxDescriptionLength = 500;
+const warningThreshold = 450; // Show counter in red when approaching limit
+
 export function SubmitForm({ categories }: SubmitFormProps) {
   const router = useRouter();
   const [error, setError] = useState<Record<string, string[]>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [textCounter, setTextCounter] = useState(0);
+
+  const descriptionHintId = "description-hint";
+  const descriptionCounterId = "description-counter";
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -36,7 +43,9 @@ export function SubmitForm({ categories }: SubmitFormProps) {
 
       if (!res.ok) {
         const body = await res.json();
-        setError(body.error?.fieldErrors ?? { _: ["Submission failed. Try again."] });
+        setError(
+          body.error?.fieldErrors ?? { _: ["Submission failed. Try again."] },
+        );
         return;
       }
 
@@ -59,22 +68,52 @@ export function SubmitForm({ categories }: SubmitFormProps) {
         />
       </Field>
 
-      <Field label="Description" name="description" error={error.description} hint="Max 500 characters">
-        {/* TODO [easy-challenge]: add a live character counter below this textarea */}
+      <Field
+        label="Description"
+        name="description"
+        error={error.description}
+        hint={
+          <div className="flex min-h-5 items-center justify-between gap-3">
+            <span id={descriptionHintId}>Max 500 characters</span>
+            <span
+              id={descriptionCounterId}
+              aria-live="polite"
+              className={
+                textCounter >= warningThreshold
+                  ? "text-red-600"
+                  : "text-gray-400"
+              }
+            >
+              {textCounter} / {maxDescriptionLength}
+            </span>
+          </div>
+        }
+      >
         <textarea
+          id="description"
           name="description"
           rows={4}
           placeholder="What does your module do? Who is it for?"
-          maxLength={500}
+          maxLength={maxDescriptionLength}
+          aria-describedby={`${descriptionHintId} ${descriptionCounterId}`}
           className={inputClass}
+          onChange={(e) =>
+            setTextCounter(
+              Math.min(e.currentTarget.value.length, maxDescriptionLength),
+            )
+          }
         />
       </Field>
 
       <Field label="Category" name="categoryId" error={error.categoryId}>
         <select name="categoryId" className={inputClass} defaultValue="">
-          <option value="" disabled>Select a category</option>
+          <option value="" disabled>
+            Select a category
+          </option>
           {categories.map((c) => (
-            <option key={c.id} value={c.id}>{c.name}</option>
+            <option key={c.id} value={c.id}>
+              {c.name}
+            </option>
           ))}
         </select>
       </Field>
@@ -97,9 +136,7 @@ export function SubmitForm({ categories }: SubmitFormProps) {
         />
       </Field>
 
-      {error._ && (
-        <p className="text-sm text-red-600">{error._.join(", ")}</p>
-      )}
+      {error._ && <p className="text-sm text-red-600">{error._.join(", ")}</p>}
 
       <button
         type="submit"
@@ -125,7 +162,7 @@ function Field({
   label: string;
   name: string;
   error?: string[];
-  hint?: string;
+  hint?: React.ReactNode;
   children: React.ReactNode;
 }) {
   return (
@@ -134,7 +171,7 @@ function Field({
         {label}
       </label>
       {children}
-      {hint && <p className="text-xs text-gray-400">{hint}</p>}
+      {hint && <div className="text-xs text-gray-400">{hint}</div>}
       {error && <p className="text-xs text-red-600">{error.join(", ")}</p>}
     </div>
   );
