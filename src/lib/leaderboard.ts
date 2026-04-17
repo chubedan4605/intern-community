@@ -1,6 +1,5 @@
 import { db } from "@/lib/db";
 
-export const LEADERBOARD_REVALIDATE_SECONDS = 600;
 export const LEADERBOARD_LIMIT = 10;
 
 export type LeaderboardEntry = {
