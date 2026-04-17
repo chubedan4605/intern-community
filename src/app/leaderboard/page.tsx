@@ -73,20 +73,6 @@ export default async function Leaderboard() {
               <span className="bg-[#eef8f9] text-[#4db6ac] px-6 py-1.5 rounded-full text-sm font-medium mb-6">
                 {formatSubmissionCount(user.approvedSubmissions)}
               </span>
-              {/* <div className="w-full grid grid-cols-3 border-t border-gray-100 bg-gray-50/50">
-                  <div className="flex items-center justify-center gap-2 py-4 border-r border-gray-100">
-                    <Clock className="w-4 h-4 text-slate-700" />
-                    <span className="font-bold text-slate-800 text-sm">120</span>
-                  </div>
-                  <div className="flex items-center justify-center gap-2 py-4 border-r border-gray-100">
-                    <Eye className="w-4 h-4 text-slate-700" />
-                    <span className="font-bold text-slate-800 text-sm">307</span>
-                  </div>
-                  <div className="flex items-center justify-center gap-2 py-4">
-                    <Share className="w-4 h-4 text-slate-700" />
-                    <span className="font-bold text-slate-800 text-sm">138</span>
-                  </div>
-                </div> */}
             </div>
           ))}
         </div>
